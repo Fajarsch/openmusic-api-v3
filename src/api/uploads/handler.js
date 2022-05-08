@@ -19,7 +19,7 @@ class UploadsHandler {
       const { id } = request.params;
       const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/albums/covers/${filename}`;
 
-      await this._albumsService.addAlbumCover({ id, coverUrl: fileLocation });
+      await this._albumsService.addAlbumCover(id, { coverUrl: fileLocation });
 
       return h.response({
         status: 'success',

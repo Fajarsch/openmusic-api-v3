@@ -32,14 +32,4 @@ const mapDBToSongModel = ({
   updatedAt: updated_at,
 });
 
-const mapDBUserLikeAlbumModel = ({
-  id,
-  user_id,
-  album_id,
-}) => ({
-  id,
-  userId: user_id,
-  albumId: album_id,
-});
-
-module.exports = { mapDBToAlbumModel, mapDBToSongModel, mapDBUserLikeAlbumModel };
+module.exports = { mapDBToAlbumModel, mapDBToSongModel };

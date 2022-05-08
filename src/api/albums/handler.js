@@ -155,11 +155,23 @@ class AlbumsHandler {
       const { id: userId } = request.auth.credentials;
 
       await this._service.getAlbumById(albumId);
-      await this._service.addAlbumLike(albumId, userId);
+
+      const checkLike = await this._service.checkAlbumLike(userId, albumId);
+
+      if (!checkLike) {
+        await this._service.addAlbumLike(userId, albumId);
+  
+        return h.response({
+          status: 'success',
+          message: 'Like album',
+        }).code(201);
+      }
+
+      await this._service.deleteAlbumLike(userId, albumId);
 
       return h.response({
         status: 'success',
-        message: 'Like pada album telah ditambahkan',
+        message: 'Unlike album',
       }).code(201);
     } catch (error) {
       if (error instanceof ClientError) {
@@ -172,22 +184,24 @@ class AlbumsHandler {
       console.log(error);
       return h.response({
         status: 'error',
-        message: error.message,
+        message: 'Maaf, terjadi kegagalan pada server kami',
       }).code(500);
     }
   }
 
   async getAlbumLikeHandler(request, h) {
     try {
-      const { id } = request.params;
-      const { likes } = await this._service.getAlbumLike(id);
+      const { id: albumId } = request.params;
+
+      const data = await this._service.getAlbumLike(albumId);
+      const likes = data.count;
 
       return h.response({
         status: 'success',
         data: {
           likes,
         },
-      }).code(200);
+      }).code(200).header('X-Data-Source', data.source);
     } catch (error) {
       if (error instanceof ClientError) {
         return h.response({
@@ -199,7 +213,7 @@ class AlbumsHandler {
       console.log(error);
       return h.response({
         status: 'error',
-        message: error.message,
+        message: 'Maaf, terjadi kegagalan pada server kami',
       }).code(500);
     }
   }
